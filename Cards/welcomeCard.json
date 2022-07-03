@@ -1,0 +1,30 @@
+{
+  "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+  "type": "AdaptiveCard",
+  "version": "1.0",
+  "body": [
+    {
+      "type": "Image",
+      "url": "https://www.lg.com/lg5-common-gp/images/common/header/logo-b2c.jpg",
+      "size": "stretch"
+    },
+    {
+      "type": "TextBlock",
+      "spacing": "medium",
+      "size": "default",
+      "weight": "bolder",
+      "text": "Welcome to Ecommerce Merchandiser ChatBot!",
+      "wrap": true,
+      "maxLines": 0
+    },
+    {
+      "type": "TextBlock",
+      "size": "default",
+      "isSubtle": true,
+      "text": "This is a simple bot which aims to make merchandiser manage products, giving them access to ADD|UPDATE|REMOVE|VIEW the products on the basis of their category.",
+      "wrap": true,
+      "maxLines": 0
+    }
+  ]
+
+}
