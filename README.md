@@ -83,6 +83,8 @@ Once you created the LUIS model, update `appsettings.json` with your `LuisAppId`
 
 To learn more about deploying a bot to Azure, see [Deploy your bot to Azure](https://aka.ms/azuredeployment) for a complete list of deployment instructions.
 
+## Demonstration Video
+Youtube - https://youtu.be/7rRr-QrRWck
 
 ## Further reading
 
