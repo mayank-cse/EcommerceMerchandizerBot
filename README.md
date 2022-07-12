@@ -86,6 +86,9 @@ To learn more about deploying a bot to Azure, see [Deploy your bot to Azure](htt
 ## Demonstration Video
 Youtube - https://youtu.be/7rRr-QrRWck
 
+## Power Point Presentation
+https://docs.google.com/presentation/d/15G2gJ_l0Yf6BbbnAvDusuyo-6oca0zkx/edit?usp=sharing&ouid=110656000818841743215&rtpof=true&sd=true
+
 ## Further reading
 
 - [Bot Framework Documentation](https://docs.botframework.com)
