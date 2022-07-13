@@ -99,12 +99,13 @@ namespace EcommerceAdminBot.Dialogs.Operations
             
             string property = (string)stepContext.Values["Property"];
             bool updateFlag = false;
+            UserProfile userProfile = await _stateService.UserProfileAccessor.GetAsync(stepContext.Context, () => new UserProfile());
 
             switch (property)
             {
                 case "Name":
                     stepContext.Values["ProductName"] = (string)stepContext.Result;
-                    if (!(await _cosmosDBClient.UpdateProductCatalog(productList.Id, productList.ProductName, "ProductName", (string)stepContext.Values["ProductName"])))
+                    if (!(await _cosmosDBClient.UpdateProductCatalog(userProfile.Email,productList.Id, productList.ProductName, "ProductName", (string)stepContext.Values["ProductName"])))
                     {
                         updateFlag = true;
                     }
@@ -113,7 +114,7 @@ namespace EcommerceAdminBot.Dialogs.Operations
                 case "Price":
                     stepContext.Values["ProductPrice"] = (int)stepContext.Result;
                     int price = (int)stepContext.Values["ProductPrice"];
-                    if(!(await _cosmosDBClient.UpdateProductCatalog(productList.Id, productList.ProductName, "Price", price.ToString())))
+                    if(!(await _cosmosDBClient.UpdateProductCatalog(userProfile.Email, productList.Id, productList.ProductName, "Price", price.ToString())))
                     {
                         updateFlag = true;
                     }
@@ -121,7 +122,7 @@ namespace EcommerceAdminBot.Dialogs.Operations
 
                 case "Image":
                     stepContext.Values["ProductImageURL"] = (string)stepContext.Result;
-                    if (!(await _cosmosDBClient.UpdateProductCatalog(productList.Id, productList.ProductName, "Image", (string)stepContext.Values["ProductImageURL"])))
+                    if (!(await _cosmosDBClient.UpdateProductCatalog(userProfile.Email, productList.Id, productList.ProductName, "Image", (string)stepContext.Values["ProductImageURL"])))
                     {
                         updateFlag = true;
                     }
@@ -129,7 +130,7 @@ namespace EcommerceAdminBot.Dialogs.Operations
 
                 case "Category":
                     stepContext.Values["ProductCategory"] = ((FoundChoice)stepContext.Result).Value;
-                    if (!(await _cosmosDBClient.UpdateProductCatalog(productList.Id, productList.ProductName, "Category", (string)stepContext.Values["ProductCategory"])))
+                    if (!(await _cosmosDBClient.UpdateProductCatalog(userProfile.Email, productList.Id, productList.ProductName, "Category", (string)stepContext.Values["ProductCategory"])))
                     {
                         updateFlag = true;
                     }
@@ -156,6 +157,7 @@ namespace EcommerceAdminBot.Dialogs.Operations
         private async Task<DialogTurnResult> SummaryStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
             var productList = (ProductDBDetails)stepContext.Options;
+            UserProfile userProfile = await _stateService.UserProfileAccessor.GetAsync(stepContext.Context, () => new UserProfile());
 
             if ((bool)stepContext.Result)
             {
@@ -163,7 +165,7 @@ namespace EcommerceAdminBot.Dialogs.Operations
             }
             else
             {
-                List<ProductDBDetails> updatedProduct = await _cosmosDBClient.QueryItemWithIdAsync(productList.Id);
+                List<ProductDBDetails> updatedProduct = await _cosmosDBClient.QueryItemWithIdAsync(userProfile.Email,productList.Id);
 
                 var attachments = new List<Attachment>();
                 var reply = MessageFactory.Attachment(attachments);

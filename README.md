@@ -1,4 +1,4 @@
-# Ecommerce Merchandiser Bot
+# EcommerceAdminBot
 
 Bot Framework v4 core bot sample.
 
@@ -41,13 +41,13 @@ Once you created the LUIS model, update `appsettings.json` with your `LuisAppId`
   "LuisAPIHostName": "Your LUIS App region here (i.e: westus.api.cognitive.microsoft.com)"
 ```
 
-## To try this Project
+## To try this sample
 
-- In a terminal, navigate to `EcommerceMerchandiserBot`
+- In a terminal, navigate to `EcommerceAdminBot`
 
     ```bash
     # change into project folder
-    cd EcommerceMerchandiserBot
+    cd EcommerceAdminBot
     ```
 
 - Run the bot from a terminal or from Visual Studio, choose option A or B.
@@ -63,8 +63,8 @@ Once you created the LUIS model, update `appsettings.json` with your `LuisAppId`
 
   - Launch Visual Studio
   - File -> Open -> Project/Solution
-  - Navigate to `EcommerceMerchandiserBot` folder
-  - Select `EcommerceMerchandiserBot.csproj` file
+  - Navigate to `EcommerceAdminBot` folder
+  - Select `EcommerceAdminBot.csproj` file
   - Press `F5` to run the project
 
 ## Testing the bot using Bot Framework Emulator
@@ -82,12 +82,6 @@ Once you created the LUIS model, update `appsettings.json` with your `LuisAppId`
 ## Deploy the bot to Azure
 
 To learn more about deploying a bot to Azure, see [Deploy your bot to Azure](https://aka.ms/azuredeployment) for a complete list of deployment instructions.
-
-## Demonstration Video
-Youtube - https://youtu.be/7rRr-QrRWck
-
-## Power Point Presentation
-https://docs.google.com/presentation/d/15G2gJ_l0Yf6BbbnAvDusuyo-6oca0zkx/edit?usp=sharing&ouid=110656000818841743215&rtpof=true&sd=true
 
 ## Further reading
 

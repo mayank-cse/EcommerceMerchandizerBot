@@ -64,7 +64,7 @@ namespace EcommerceAdminBot.Dialogs.Operations
 
             await _stateService.UserProfileAccessor.SetAsync(stepContext.Context, userProfile);
 
-            await stepContext.Context.SendActivityAsync(MessageFactory.Text($"Please wait while I send an OTP to your email{userProfile.Email} for verification."), cancellationToken);
+            await stepContext.Context.SendActivityAsync(MessageFactory.Text($"Please wait while I send an OTP to your email {userProfile.Email} for verification."), cancellationToken);
 
             // trigger the power automate flow to send email
             bool status = await _userRespository.SendEmailForCodeVerificationAsync(userProfile.OTP, userProfile.Email, userProfile.Name, Configuration["PowerAutomatePOSTURL"]);
@@ -129,12 +129,14 @@ namespace EcommerceAdminBot.Dialogs.Operations
         {
             UserProfile userProfile = await _stateService.UserProfileAccessor.GetAsync(promptcontext.Context, () => new UserProfile());
             int verificationCode = promptcontext.Recognized.Value;
-
+            
             if (verificationCode == userProfile.OTP)
             {
                 return true;
             }
             await promptcontext.Context.SendActivityAsync("The verification code you entered is incorrect. Please enter the correct code.", cancellationToken: cancellationtoken);
+            userProfile.Email = null;
+            //await promptcontext.EndDialogAsync(null, cancellationtoken);
             return false;
         }
     }

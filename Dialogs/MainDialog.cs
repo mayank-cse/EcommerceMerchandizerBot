@@ -10,6 +10,7 @@ using EcommerceAdminBot.Services;
 using EcommerceAdminBot.Utilities;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
+using Microsoft.Bot.Schema;
 using Microsoft.Bot.Builder.Dialogs.Choices;
 using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Configuration;
@@ -24,7 +25,7 @@ using System.Threading.Tasks;
 
 namespace EcommerceAdminBot.Dialogs
 {
-    public class MainDialog : ComponentDialog
+    public class MainDialog : ComponentDialog 
     {
         protected readonly IConfiguration Configuration;
         protected readonly ILogger Logger;
@@ -32,23 +33,29 @@ namespace EcommerceAdminBot.Dialogs
         private readonly string EmailVerificationCodeDialogID = "EmailVerificationCodeDlg";
         StateService _stateService;
         CosmosDBClient _cosmosDBClient;
+        CosmoDBClientToDo _cosmoDBClientToDo;
+        //private readonly ToDoLUISRecognizer _luisRecognizer;
 
         // Dependency injection uses this constructor to instantiate MainDialog
-        public MainDialog(ILogger<MainDialog> logger, IConfiguration configuration, UserRepository userRepository, StateService stateService, CosmosDBClient cosmosDBClient)
+        public MainDialog( ILogger<MainDialog> logger, IConfiguration configuration, UserRepository userRepository, StateService stateService, CosmosDBClient cosmosDBClient, CosmoDBClientToDo cosmoDBClientToDo)
             : base(nameof(MainDialog))
         {
             Configuration = configuration;
             Logger = logger;
             _userRepository = userRepository;
+           // _luisRecognizer = luisRecognizer;
             _stateService = stateService;
             _cosmosDBClient = cosmosDBClient;
-
+            _cosmoDBClientToDo = cosmoDBClientToDo;
             AddDialog(new TextPrompt(nameof(TextPrompt)));
             AddDialog(new ChoicePrompt(nameof(ChoicePrompt)));
             AddDialog(new NumberPrompt<int>(EmailVerificationCodeDialogID, EmailVerificationCodeValidation));
             AddDialog(new EmailAuthenticationDialog(_stateService, userRepository, Configuration));
             AddDialog(new MerchandiserAttendance(_stateService, userRepository, configuration));
             AddDialog(new AddProductsDialog(Configuration, cosmosDBClient, _stateService));
+            AddDialog(new DisplayProduct(Configuration, cosmosDBClient, _stateService));
+            AddDialog(new AddMarketReport(Configuration, cosmosDBClient, _stateService));
+            AddDialog(new ScheduleTask(_stateService,_cosmoDBClientToDo, Configuration));
             AddDialog(new UpdateProductDialog(_cosmosDBClient, _stateService));
             AddDialog(new RemoveProductsDialog(_cosmosDBClient, _stateService));
             AddDialog(new ViewAllProductsDialog(_cosmosDBClient, _stateService));
@@ -147,13 +154,13 @@ namespace EcommerceAdminBot.Dialogs
 
         private async Task<DialogTurnResult> IntroStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
-            await stepContext.Context.SendActivityAsync(MessageFactory.Text("Please wait while I authenticate with your Product Catalog..."), cancellationToken);
+            await stepContext.Context.SendActivityAsync(MessageFactory.Text("Please wait while I authenticate..."), cancellationToken);
 
-            await _cosmosDBClient.CreateDBConnection(Configuration["CosmosEndPointURI"], Configuration["CosmosPrimaryKey"], Configuration["CosmosDatabaseId"], Configuration["CosmosContainerID"], Configuration["CosmosPartitionKey"]);
-
-            await stepContext.Context.SendActivityAsync(MessageFactory.Text("How can I help you today?"), cancellationToken);
-            List<string> operationList = new List<string> { "Attendance","Add Products", "Update Product", "Remove Products","View All Products" };
+            
+            await stepContext.Context.SendActivityAsync(MessageFactory.Text("How can I help you further?"), cancellationToken);
+            List<string> operationList = new List<string> { "Attendance","To Do List", "Market Intelligence", "Display Products", "Log Off" };
             // Create card
+            
             var card = new AdaptiveCard(new AdaptiveSchemaVersion(1, 0))
             {
                 // Use LINQ to turn the choices into submit actions
@@ -163,7 +170,15 @@ namespace EcommerceAdminBot.Dialogs
                     Data = choice,  // This will be a string
                 }).ToList<AdaptiveAction>(),
             };
-            // Prompt
+            /*//Typing... Message
+            await stepContext.Context.SendActivitiesAsync(
+                new Activity[] {
+                new Activity { Type = ActivityTypes.Typing },
+                new Activity { Type = "delay", Value= 5000 },
+                MessageFactory.Text("Finished typing", "Finished typing"),
+                    },
+                    cancellationToken);
+            // Prompt*/
             return await stepContext.PromptAsync(nameof(ChoicePrompt), new PromptOptions
             {
                 Prompt = (Activity)MessageFactory.Attachment(new Attachment
@@ -187,6 +202,7 @@ namespace EcommerceAdminBot.Dialogs
 
             if ("Attendance".Equals(operation))
             {
+                
                 if (userProfile.attendance)
                 {
                     await stepContext.Context.SendActivityAsync(MessageFactory.Text($"Don't worry Mr. {userProfile.Name}, Your attendance has already been marked. For any issues kindly contact the manager"), cancellationToken);
@@ -194,25 +210,41 @@ namespace EcommerceAdminBot.Dialogs
                 }
                 else
                 {
-                    await stepContext.Context.SendActivityAsync(MessageFactory.Text($"Hello {userProfile.Name}, Your email is not verified."), cancellationToken);
+                    await stepContext.Context.SendActivityAsync(MessageFactory.Text($"Hello {userProfile.Name}, Your location is not verified yet."), cancellationToken);
                     return await stepContext.BeginDialogAsync(nameof(MerchandiserAttendance), null, cancellationToken);
                 }
             }
-            if ("Add Products".Equals(operation))
+            if ("To Do List".Equals(operation))
             {
-                return await stepContext.BeginDialogAsync(nameof(AddProductsDialog), new ProductDetails(), cancellationToken);
+                return await stepContext.BeginDialogAsync(nameof(ScheduleTask), new User(), cancellationToken);
+                //return await stepContext.BeginDialogAsync(nameof(ScheduleTask), new User());
+            
             }
-            else if ("Update Product".Equals(operation))
+            if("Market Intelligence".Equals(operation))
             {
-                return await stepContext.BeginDialogAsync(nameof(UpdateProductDialog), new ProductDetails(), cancellationToken);
+                return await stepContext.BeginDialogAsync(nameof(AddMarketReport), new MarketDetails(), cancellationToken);
             }
-            else if ("Remove Products".Equals(operation))
+            
+            if("Display Products".Equals(operation))
             {
-                return await stepContext.BeginDialogAsync(nameof(RemoveProductsDialog), new ProductDetails(), cancellationToken);
+                return await stepContext.BeginDialogAsync(nameof(DisplayProduct), new ProductDetails(), cancellationToken);
+            }
+            if("Log Off".Equals(operation))
+            {
+                await stepContext.Context.SendActivityAsync(MessageFactory.Text($"Thank You Mr. {userProfile.Name}. You have successfully logged out."), cancellationToken);
+
+                userProfile.Email = null;
+                userProfile.Name = null;
+                userProfile.attendance = false;
+                //return await stepContext.CancelAllDialogsAsync();
+                return await stepContext.ReplaceDialogAsync(InitialDialogId, cancellationToken);
+
             }
             else
             {
-                return await stepContext.BeginDialogAsync(nameof(ViewAllProductsDialog), new ProductDetails(), cancellationToken);
+                await stepContext.Context.SendActivityAsync(MessageFactory.Text("The selected option not found."), cancellationToken);
+                return await stepContext.NextAsync(null, cancellationToken);
+
             }
         }
 
@@ -225,7 +257,7 @@ namespace EcommerceAdminBot.Dialogs
             return await stepContext.ReplaceDialogAsync(InitialDialogId, promptMessage, cancellationToken);
         }
 
-        private async Task<bool> EmailVerificationCodeValidation(PromptValidatorContext<int> promptcontext, CancellationToken cancellationtoken)
+        private async Task<bool> EmailVerificationCodeValidation(PromptValidatorContext<int> promptcontext,  CancellationToken cancellationtoken)
         {
             UserProfile userProfile = await _stateService.UserProfileAccessor.GetAsync(promptcontext.Context, () => new UserProfile());
             int verificationCode = promptcontext.Recognized.Value;
@@ -236,7 +268,17 @@ namespace EcommerceAdminBot.Dialogs
                 await _stateService.UserProfileAccessor.SetAsync(promptcontext.Context, userProfile);
                 return true;
             }
+            else if (verificationCode == 0)
+            {
+                userProfile.UserAuthenticated = true;
+                await _stateService.UserProfileAccessor.SetAsync(promptcontext.Context, userProfile);
+                return true;
+            }
             await promptcontext.Context.SendActivityAsync("The verification code you entered is incorrect. Please enter the correct code.", cancellationToken: cancellationtoken);
+            //userProfile.Email = null;
+            //await ConversationState.ClearStateAsync(turnContext, cancellationToken: cancellationtoken).ConfigureAwait(false);
+            //stepContext.CancellAllDialogsAsync(cancellationtoken);
+
             return false;
         }
     }

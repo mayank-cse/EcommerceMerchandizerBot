@@ -36,6 +36,19 @@ namespace EcommerceAdminBot.Cards
 
             return heroCard;
         }
+       // marketDetails.ProductList[i].Email,marketDetails.ProductList[i].SName, marketDetails.ProductList[i].location, marketDetails.ProductList[i].Photo, marketDetails.ProductList[i].Company ,marketDetails.ProductList[i].ImageURL, marketDetails.ProductList[i].Category)
+        public static HeroCard GetHeroCard(string Email, string storename, string location, string imageUrl, string TextMessage)
+        {
+                var heroCard = new HeroCard
+                {
+                    Title = TextMessage,
+                    Subtitle = $"Store Name/Distributor Name: {storename} Location: {location}",
+                    Images = new List<CardImage> { new CardImage(imageUrl) },
+                };
+
+                return heroCard;
+            
+        }
 
         public static HeroCard GetHeroCardForView()
         {

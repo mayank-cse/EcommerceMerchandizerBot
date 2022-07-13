@@ -45,7 +45,7 @@ namespace EcommerceAdminBot.Dialogs.Operations
         private async Task<DialogTurnResult> storeNameAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
 
-            await stepContext.Context.SendActivityAsync(MessageFactory.Text("Please Authenticate..."), cancellationToken);
+            //await stepContext.Context.SendActivityAsync(MessageFactory.Text("Please Authenticate..."), cancellationToken);
             return await stepContext.PromptAsync(nameof(TextPrompt), new PromptOptions
             {
                 Prompt = MessageFactory.Text("To mark your attendance kindly share the store name you have visited today."),
@@ -106,6 +106,7 @@ namespace EcommerceAdminBot.Dialogs.Operations
             {
                 await stepContext.Context.SendActivityAsync(MessageFactory.Text("Verfication Email has been sent to your manager. Thank You for your response."), cancellationToken);
                 await stepContext.Context.SendActivityAsync(MessageFactory.Text("In Case you have any issues kindly contact the admin."), cancellationToken);
+                await stepContext.Context.SendActivityAsync(MessageFactory.Text("Now, share your 'To-Do List' for the day"), cancellationToken);
                 userProfile.attendance = true;
                 await _stateService.UserProfileAccessor.SetAsync(stepContext.Context, userProfile);
             }

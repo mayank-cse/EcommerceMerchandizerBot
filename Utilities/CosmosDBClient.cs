@@ -97,22 +97,24 @@ namespace EcommerceAdminBot.Utilities
 
         }
 
-        public async Task<int> AddItemsToContainerAsync(string productId, string productName, int productPrice, string productImageURL, string productCategory)
+        public async Task<int> AddItemsToContainerAsync(string Email, string productId, string productName, int productPrice, string productImageURL, string productCategory)
         {
             ProductDBDetails productDBDetails = new ProductDBDetails
             {
+                Email = Email,
                 Id = productId,
                 ProductName = productName,
                 Price = productPrice,
                 Image = productImageURL,
-                Category = productCategory
+                Category = productCategory,
+                
             };
 
             try
             {
                 // Read the item to see if it exists.  
-                ItemResponse<ProductDBDetails> productResponse = await this.container.ReadItemAsync<ProductDBDetails>(productDBDetails.Id, new PartitionKey(productDBDetails.ProductName));
-                Console.WriteLine("Item in database with id: {0} already exists\n", productResponse.Resource.Id);
+                ItemResponse<ProductDBDetails> productResponse = await this.container.ReadItemAsync<ProductDBDetails>(productDBDetails.Email, new PartitionKey(productDBDetails.ProductName));
+                Console.WriteLine("Item in database with id: {0} already exists\n", productResponse.Resource.ProductName);
                 return -1;
             }
             catch (CosmosException ex) when (ex.StatusCode == HttpStatusCode.NotFound)
@@ -121,17 +123,96 @@ namespace EcommerceAdminBot.Utilities
                 ItemResponse<ProductDBDetails> productResponse = await this.container.CreateItemAsync<ProductDBDetails>(productDBDetails, new PartitionKey(productDBDetails.ProductName));
 
                 // Note that after creating the item, we can access the body of the item with the Resource property off the ItemResponse. We can also access the RequestCharge property to see the amount of RUs consumed on this request.
-                Console.WriteLine("Created item in database with id: {0} Operation consumed {1} RUs.\n", productResponse.Resource.Id, productResponse.RequestCharge);
+                Console.WriteLine("Created item in database with id: {0} Operation consumed {1} RUs.\n", productResponse.Resource.ProductName, productResponse.RequestCharge);
 
                 return 1;
             }
             
         }
+
+        //marketDetails.ProductList[i].Email,marketDetails.ProductList[i].SName, marketDetails.ProductList[i].location, marketDetails.ProductList[i].Photo, marketDetails.ProductList[i].Company ,marketDetails.ProductList[i].ImageURL, marketDetails.ProductList[i].Category
+        public async Task<int> AddItemsToContainerAsync(string Email, string storeName, string location, string photo, string company, string productImageURL, string productCategory, string merchandiserMessage)
+        {
+
+            MarketDBDetails marketDBDetails = new MarketDBDetails
+            {
+                Email = Email,
+                //Id = productId,
+                StoreName = storeName,
+                Location = location,
+                Photo = photo,
+                informationCategory = company,
+                //ProductName = productName,
+                //Price = productPrice,
+                Image = productImageURL,
+                Category = productCategory,
+                TextMessage = merchandiserMessage
+            };
+
+            try
+            {
+                // Read the item to see if it exists.  
+                ItemResponse<MarketDBDetails> productResponse = await this.container.ReadItemAsync<MarketDBDetails>(marketDBDetails.Email, new PartitionKey(marketDBDetails.TextMessage));
+                Console.WriteLine("Item in database with id: {0} already exists\n", productResponse.Resource.Email);
+                return -1;
+            }
+            catch (CosmosException ex) when (ex.StatusCode == HttpStatusCode.NotFound)
+            {
+
+                ItemResponse<MarketDBDetails> productResponse = await this.container.CreateItemAsync<MarketDBDetails>(marketDBDetails, new PartitionKey(marketDBDetails.TextMessage));
+
+                // Note that after creating the item, we can access the body of the item with the Resource property off the ItemResponse. We can also access the RequestCharge property to see the amount of RUs consumed on this request.
+                Console.WriteLine("Created item in database with id: {0} Operation consumed {1} RUs.\n", productResponse.Resource.Email, productResponse.RequestCharge);
+
+                return 1;
+            }
+
+        }
+        /*public async Task<int> AddItemsToContainerAsync(string Email, string storename, string location, string photo, string company,string productImageURL, string productCategory)
+        {
+            MarketDBDetails marketDBDetails = new MarketDBDetails
+            {
+                Email = Email,
+                 //Id = productId,
+                 StoreName = storename,
+                 Location = location,
+                 Photo = photo,
+                 Company = company,
+                 //ProductName = productName,
+                 //Price = productPrice,
+                 Image = productImageURL,
+                 Category = productCategory 
+                Email = Email,
+                StoreName = storename,
+                Price = 1,
+                Image = productImageURL,
+                Category = productCategory
+            };
+
+            try
+            {
+                // Read the item to see if it exists.  
+                ItemResponse<MarketDBDetails> productResponse = await this.container.ReadItemAsync<MarketDBDetails>(marketDBDetails.Email, new PartitionKey(marketDBDetails.StoreName));
+                Console.WriteLine("Item in database with id: {0} already exists\n", productResponse.Resource.Email);
+                return -1;
+            }
+            catch (CosmosException ex) when (ex.StatusCode == HttpStatusCode.NotFound)
+            {
+
+                ItemResponse<MarketDBDetails> productResponse = await this.container.CreateItemAsync<MarketDBDetails>(marketDBDetails, new PartitionKey(marketDBDetails.StoreName));
+
+                // Note that after creating the item, we can access the body of the item with the Resource property off the ItemResponse. We can also access the RequestCharge property to see the amount of RUs consumed on this request.
+                Console.WriteLine("Created item in database with id: {0} Operation consumed {1} RUs.\n", productResponse.Resource.Email, productResponse.RequestCharge);
+
+                return 1;
+            }
+
+        }*/
         // </AddItemsToContainerAsync>
 
-        public async Task<List<ProductDBDetails>> QueryLatestCategoryItemsAsync(string category)
+        public async Task<List<ProductDBDetails>> QueryLatestCategoryItemsAsync(string category, string Email)
         {
-            var sqlQueryText = $"SELECT TOP 1 * FROM c WHERE c.Category = '{category}' ORDER BY c.id DESC";
+            var sqlQueryText = $"SELECT TOP 1 * FROM c WHERE c.Category = '{category}' AND c.id = '{Email}' ORDER BY c.id DESC";
 
             Console.WriteLine("Running query: {0}\n", sqlQueryText);
 
@@ -151,7 +232,37 @@ namespace EcommerceAdminBot.Utilities
             }
             return productDBDetails;
         }
+        public async Task<List<ProductDBDetails>> QueryAllItemsAsync(string operation,string Email, string category)
+        {
+            var sqlQueryText = $"SELECT * FROM c WHERE c.id = '{Email}'";
 
+            if (operation.Equals("All"))
+            {
+                sqlQueryText = $"SELECT * FROM c WHERE c.id = '{Email}'";
+            }
+            else if (operation.Equals("Category"))
+            {
+                sqlQueryText = $"SELECT * FROM c WHERE c.Category = '{category}' and c.id = '{Email}'";
+            }
+
+            Console.WriteLine("Running query: {0}\n", sqlQueryText);
+
+            QueryDefinition queryDefinition = new QueryDefinition(sqlQueryText);
+            FeedIterator<ProductDBDetails> queryResultSetIterator = this.container.GetItemQueryIterator<ProductDBDetails>(queryDefinition);
+
+            List<ProductDBDetails> productDetails = new List<ProductDBDetails>();
+
+            while (queryResultSetIterator.HasMoreResults)
+            {
+                FeedResponse<ProductDBDetails> currentResultSet = await queryResultSetIterator.ReadNextAsync();
+                foreach (ProductDBDetails product in currentResultSet)
+                {
+                    productDetails.Add(product);
+                    Console.WriteLine("\tRead {0}\n", product);
+                }
+            }
+            return productDetails;
+        }
         public async Task<List<ProductDBDetails>> QueryAllItemsAsync(string operation, string category)
         {
             var sqlQueryText = $"SELECT * FROM c";
@@ -183,7 +294,28 @@ namespace EcommerceAdminBot.Utilities
             }
             return productDetails;
         }
+        public async Task<List<ProductDBDetails>> QueryItemWithIdAsync(string productId, string Email)
+        {
+            var sqlQueryText = $"SELECT * FROM c where c.Id = '{productId}' and c.id = '{Email}'";
 
+            Console.WriteLine("Running query: {0}\n", sqlQueryText);
+
+            QueryDefinition queryDefinition = new QueryDefinition(sqlQueryText);
+            FeedIterator<ProductDBDetails> queryResultSetIterator = this.container.GetItemQueryIterator<ProductDBDetails>(queryDefinition);
+
+            List<ProductDBDetails> productDetails = new List<ProductDBDetails>();
+
+            while (queryResultSetIterator.HasMoreResults)
+            {
+                FeedResponse<ProductDBDetails> currentResultSet = await queryResultSetIterator.ReadNextAsync();
+                foreach (ProductDBDetails product in currentResultSet)
+                {
+                    productDetails.Add(product);
+                    Console.WriteLine("\tRead {0}\n", product);
+                }
+            }
+            return productDetails;
+        }
         public async Task<List<ProductDBDetails>> QueryItemWithIdAsync(string productId)
         {
             var sqlQueryText = $"SELECT * FROM c where c.id = '{productId}'";
@@ -207,7 +339,7 @@ namespace EcommerceAdminBot.Utilities
             return productDetails;
         }
 
-        public async Task<bool> DeleteItemAsync(string partitionKey, string id)
+        public async Task<bool> DeleteItemAsync(string partitionKey, string id, string Email)
         {
             var partitionKeyValue = partitionKey;
             var userId = id;
@@ -230,18 +362,19 @@ namespace EcommerceAdminBot.Utilities
         /// <summary>
         /// Replace an item in the container
         /// </summary>
-        public async Task<bool> UpdateProductCatalog(string productID, string productName, string propertyToChange, string newValue)
+        public async Task<bool> UpdateProductCatalog(string Email, string productID, string productName, string propertyToChange, string newValue)
         {
             ItemResponse<ProductDBDetails> productDBResponse = await this.container.ReadItemAsync<ProductDBDetails>(productID, new PartitionKey(productName));
             var itemBody = productDBResponse.Resource;
+            //UserProfile userProfile = await _stateService.UserProfileAccessor.GetAsync(stepContext.Context, () => new UserProfile());
 
             switch (propertyToChange)
             {
                 case "ProductName":
-                    List<ProductDBDetails> productList = await QueryItemWithIdAsync(productID);
-                    if (await DeleteItemAsync(productName, productID))
+                    List<ProductDBDetails> productList = await QueryItemWithIdAsync(productID, Email);
+                    if (await DeleteItemAsync(productName, productID, Email))
                     {
-                        if (await AddItemsToContainerAsync(productList[0].Id, newValue, productList[0].Price, productList[0].Image, productList[0].Category) == -1)
+                        if (await AddItemsToContainerAsync(Email,productList[0].Id, newValue, productList[0].Price, productList[0].Image, productList[0].Category) == -1)
                         {
                             return false;
                         }

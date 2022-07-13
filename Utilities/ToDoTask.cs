@@ -4,20 +4,16 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace EcommerceAdminBot.Models
+namespace EcommerceAdminBot.Utilities
 {
-    public class ProductDBDetails
+    public class ToDoTask
     {
         [JsonProperty(PropertyName = "id")]
-        public string Email { get; set; }
-        public string Id { get; set; }
-        public string ProductName { get; set; }
-        public int Price { get; set; }
-        public string Image { get; set; }
-        public string Category { get; set; }
-        
-        //public string TextMessage { get; set; }
 
+        public string Id { get; set; }
+        public string Task { get; set; }
+        public string Email { get; set; }
+        
         public override string ToString()
         {
             return JsonConvert.SerializeObject(this);

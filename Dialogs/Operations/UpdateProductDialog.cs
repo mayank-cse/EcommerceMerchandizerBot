@@ -68,10 +68,12 @@ namespace EcommerceAdminBot.Dialogs.Operations
 
         private async Task<DialogTurnResult> SelectProductStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
+            UserProfile userProfile = await _stateService.UserProfileAccessor.GetAsync(stepContext.Context, () => new UserProfile());
+
             string viewBy = (string)stepContext.Values["ViewBy"];
             if ("View All Products".Equals(viewBy))
             {
-                List<ProductDBDetails> productDBDetails = await _cosmosDBClient.QueryAllItemsAsync("All", "");
+                List<ProductDBDetails> productDBDetails = await _cosmosDBClient.QueryAllItemsAsync("All",userProfile.Email, "");
 
                 if (productDBDetails.Count > 0)
                 {
@@ -98,7 +100,7 @@ namespace EcommerceAdminBot.Dialogs.Operations
             {
                 stepContext.Values["Category"] = ((FoundChoice)stepContext.Result).Value;
 
-                List<ProductDBDetails> productDBDetails = await _cosmosDBClient.QueryAllItemsAsync("Category", (string)stepContext.Values["Category"]);
+                List<ProductDBDetails> productDBDetails = await _cosmosDBClient.QueryAllItemsAsync("Category",userProfile.Email, (string)stepContext.Values["Category"]);
 
                 if (productDBDetails.Count > 0)
                 {
@@ -129,8 +131,9 @@ namespace EcommerceAdminBot.Dialogs.Operations
         {
             
             stepContext.Values["ProductId"] = (string)stepContext.Result;
+            UserProfile userProfile = await _stateService.UserProfileAccessor.GetAsync(stepContext.Context, () => new UserProfile());
 
-            List<ProductDBDetails> productList = await _cosmosDBClient.QueryItemWithIdAsync((string)stepContext.Values["ProductId"]);
+            List<ProductDBDetails> productList = await _cosmosDBClient.QueryItemWithIdAsync((string)stepContext.Values["ProductId"], userProfile.Email);
 
             return await stepContext.BeginDialogAsync(nameof(IndividualProductUpdateDialog), productList[0], cancellationToken);
         }

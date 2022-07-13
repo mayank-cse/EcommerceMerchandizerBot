@@ -48,7 +48,7 @@ namespace EcommerceAdminBot.Dialogs.Operations
             AddDialog(new NumberPrompt<int>(nameof(NumberPrompt<int>)));
             AddDialog(new ConfirmPrompt(nameof(ConfirmPrompt)));
             AddDialog(new AddMoreProductsDialog());
-            AddDialog(new GetProductIDDialog(_cosmosDBClient));
+            AddDialog(new GetProductIDDialog(_cosmosDBClient, stateService));
             AddDialog(new TextPrompt(CheckProductDialogID, ProductExistsValidation));
 
             InitialDialogId = nameof(WaterfallDialog);
@@ -176,12 +176,13 @@ namespace EcommerceAdminBot.Dialogs.Operations
             var attachments = new List<Attachment>();
             var reply = MessageFactory.Attachment(attachments);
             reply.AttachmentLayout = AttachmentLayoutTypes.Carousel;
+            UserProfile userProfile = await _stateService.UserProfileAccessor.GetAsync(stepContext.Context, () => new UserProfile());
 
             for (int i = 0; i < productDetails.ProductList.Count; i++)
             {
                 bool flag = true;
 
-                if (await _cosmosDBClient.AddItemsToContainerAsync(productDetails.ProductList[i].ID, productDetails.ProductList[i].Name, productDetails.ProductList[i].Price, productDetails.ProductList[i].ImageURL, productDetails.ProductList[i].Category) == -1)
+                if (await _cosmosDBClient.AddItemsToContainerAsync(userProfile.Email,productDetails.ProductList[i].ID, productDetails.ProductList[i].Name, productDetails.ProductList[i].Price, productDetails.ProductList[i].ImageURL, productDetails.ProductList[i].Category) == -1)
                 {
                     await stepContext.Context.SendActivityAsync(MessageFactory.Text("The Product '" + productDetails.ProductList[i].Name + "' already exists"), cancellationToken);
                     flag = false;

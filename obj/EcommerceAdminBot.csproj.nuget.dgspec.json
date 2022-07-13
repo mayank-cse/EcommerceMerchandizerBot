@@ -58,6 +58,10 @@
               "target": "Package",
               "version": "[3.18.0, )"
             },
+            "Microsoft.Bot.Builder": {
+              "target": "Package",
+              "version": "[4.16.1, )"
+            },
             "Microsoft.Bot.Builder.AI.Luis": {
               "target": "Package",
               "version": "[4.13.1, )"
@@ -70,9 +74,21 @@
               "target": "Package",
               "version": "[4.13.1, )"
             },
+            "Microsoft.Bot.Builder.Location": {
+              "target": "Package",
+              "version": "[2.1.0, )"
+            },
             "Microsoft.Recognizers.Text.DataTypes.TimexExpression": {
               "target": "Package",
               "version": "[1.4.0, )"
+            },
+            "Ngrok.AspNetCore": {
+              "target": "Package",
+              "version": "[1.0.6, )"
+            },
+            "System.Threading.Tasks": {
+              "target": "Package",
+              "version": "[4.3.0, )"
             }
           },
           "imports": [

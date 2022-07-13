@@ -40,7 +40,7 @@ namespace EcommerceAdminBot.Dialogs.Operations
             return await stepContext.PromptAsync(nameof(ChoicePrompt), new PromptOptions()
             {
                 Prompt = MessageFactory.Text("How would you like to see your products?"),
-                Choices = ChoiceFactory.ToChoices(new List<string> { "View All Products", "View By Category" }),
+                Choices = ChoiceFactory.ToChoices(new List<string> { "View All Products", "View By Category", "Exit" }),
             }, cancellationToken);
         }
 
@@ -48,13 +48,17 @@ namespace EcommerceAdminBot.Dialogs.Operations
         {
             stepContext.Values["ViewBy"] = ((FoundChoice)stepContext.Result).Value;
             string viewBy = (string)stepContext.Values["ViewBy"];
+            if ("Exit".Equals(viewBy))
+            {
+                return await stepContext.EndDialogAsync(null, cancellationToken);
 
+            }
             if ("View By Category".Equals(viewBy))
             {
                 return await stepContext.PromptAsync(nameof(ChoicePrompt), new PromptOptions()
                 {
                     Prompt = MessageFactory.Text("Please select the category to view the products?"),
-                    Choices = ChoiceFactory.ToChoices(new List<string> { "Television", "Laptop", "Air Conditioner", "Monitor", "Speaker", "Earphones" }),
+                    Choices = ChoiceFactory.ToChoices(new List<string> { "Laptop", "Monitor", "Projector" }),
                 }, cancellationToken);
             }
             return await stepContext.NextAsync(null, cancellationToken);
@@ -62,10 +66,12 @@ namespace EcommerceAdminBot.Dialogs.Operations
 
         private async Task<DialogTurnResult> ViewByCategoryStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
+            UserProfile userProfile = await _stateService.UserProfileAccessor.GetAsync(stepContext.Context, () => new UserProfile());
+
             string viewBy = (string)stepContext.Values["ViewBy"];
             if ("View All Products".Equals(viewBy))
             {
-                List<ProductDBDetails> productDBDetails = await _cosmosDBClient.QueryAllItemsAsync("All", "");
+                List<ProductDBDetails> productDBDetails = await _cosmosDBClient.QueryAllItemsAsync("All", userProfile.Email , "");
 
                 if (productDBDetails.Count > 0)
                 {
@@ -93,7 +99,7 @@ namespace EcommerceAdminBot.Dialogs.Operations
             {
                 stepContext.Values["Category"] = ((FoundChoice)stepContext.Result).Value;
 
-                List<ProductDBDetails> productDBDetails = await _cosmosDBClient.QueryAllItemsAsync("Category", (string)stepContext.Values["Category"]);
+                List<ProductDBDetails> productDBDetails = await _cosmosDBClient.QueryAllItemsAsync("Category",userProfile.Email, (string)stepContext.Values["Category"]);
 
                 if (productDBDetails.Count > 0)
                 {

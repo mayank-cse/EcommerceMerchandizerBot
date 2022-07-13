@@ -1,4 +1,5 @@
 ﻿using EcommerceAdminBot.Models;
+using EcommerceAdminBot.Services;
 using EcommerceAdminBot.Utilities;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
@@ -14,10 +15,13 @@ namespace EcommerceAdminBot.Dialogs.Operations
     public class GetProductIDDialog : CancelAndHelpDialog
     {
         CosmosDBClient _cosmosDBClient;
-        public GetProductIDDialog(CosmosDBClient cosmosDBClient) : base(nameof(GetProductIDDialog))
+        StateService _stateService;
+
+
+        public GetProductIDDialog(CosmosDBClient cosmosDBClient, StateService stateService) : base(nameof(GetProductIDDialog))
         {
             _cosmosDBClient = cosmosDBClient;
-
+            _stateService = stateService;
             var waterfallSteps = new WaterfallStep[]
             {
                 CategoryStepAsync,
@@ -38,14 +42,16 @@ namespace EcommerceAdminBot.Dialogs.Operations
             return await stepContext.PromptAsync(nameof(ChoicePrompt), new PromptOptions()
             {
                 Prompt = MessageFactory.Text("Select the category to get the latest product ID."),
-                Choices = ChoiceFactory.ToChoices(new List<string> { "Television", "Laptop", "Air Conditioner", "Monitor", "Speaker", "Earphones" }),
+                Choices = ChoiceFactory.ToChoices(new List<string> { "Laptop", "Monitor", "Projector"}),
             }, cancellationToken);
         }
 
         private async Task<DialogTurnResult> ChangeCategoryStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
             string productCategory = ((FoundChoice)stepContext.Result).Value;
-            List<ProductDBDetails> productDBDetails = await _cosmosDBClient.QueryLatestCategoryItemsAsync(productCategory);
+            UserProfile userProfile = await _stateService.UserProfileAccessor.GetAsync(stepContext.Context, () => new UserProfile());
+
+            List<ProductDBDetails> productDBDetails = await _cosmosDBClient.QueryLatestCategoryItemsAsync(productCategory, userProfile.Email);
             if (productDBDetails.Count > 0)
             {
                 await stepContext.Context.SendActivityAsync(MessageFactory.Text($"The latest product ID is {productDBDetails[0].Id} for product name '{productDBDetails[0].ProductName}'"), cancellationToken);

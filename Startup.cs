@@ -49,7 +49,7 @@ namespace EcommerceAdminBot
             services.AddSingleton<UserRepository>();
 
             services.AddSingleton<CosmosDBClient>();
-
+            services.AddSingleton<CosmoDBClientToDo>();
             // Create the bot as a transient. In this case the ASP Controller is expecting an IBot.
             services.AddTransient<IBot, DialogAndWelcomeBot<MainDialog>>();
         }
