@@ -1,4 +1,4 @@
-# EcommerceAdminBot
+# EcommerceMerchandizerBot
 
 Bot Framework v4 core bot sample.
 
