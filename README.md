@@ -8,6 +8,11 @@ This bot has been created using [Bot Framework](https://dev.botframework.com), i
 - Implement a multi-turn conversation using Dialogs
 - Handle user interruptions for such things as `Help` or `Cancel`
 - Prompt for and validate requests for information from the user
+- 
+## Merchandisers Daily Tasks 
+#### From Login to Logoff
+![App Screenshot](https://github.com/mayank-cse/EcommerceMerchandizerBot/blob/main/Assets/images/Bot%20Features%20-%20Merchandisers%20Daily%20Task.png)
+
 
 ## Prerequisites
 
@@ -86,9 +91,6 @@ To learn more about deploying a bot to Azure, see [Deploy your bot to Azure](htt
 ## Implementation
 https://www.youtube.com/watch?v=7rRr-QrRWck
 
-
-## Screenshots
-![App Screenshot](https://github.com/mayank-cse/EcommerceMerchandizerBot/blob/main/Assets/images/Bot%20Features%20-%20Merchandisers%20Daily%20Task.png)
 
 
 ## Further reading
