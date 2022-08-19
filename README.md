@@ -91,6 +91,8 @@ To learn more about deploying a bot to Azure, see [Deploy your bot to Azure](htt
 ## Implementation
 https://www.youtube.com/watch?v=7rRr-QrRWck
 
+## Flow Chart
+![Flow Chart](https://github.com/mayank-cse/EcommerceMerchandizerBot/blob/main/Assets/images/Flow%20Chart.png)
 
 
 ## Further reading
