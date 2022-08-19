@@ -88,7 +88,7 @@ https://www.youtube.com/watch?v=7rRr-QrRWck
 
 
 ## Screenshots
-![App Screenshot](https://drive.google.com/file/d/1PJxXpZj_7N13nkQTDSwh4JH7BBb2dj_S/view?usp=sharing)
+![App Screenshot](https://github.com/mayank-cse/EcommerceMerchandizerBot/blob/main/Assets/images/Bot%20Features%20-%20Merchandisers%20Daily%20Task.png)
 
 
 ## Further reading
