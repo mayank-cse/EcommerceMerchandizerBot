@@ -95,6 +95,7 @@ https://www.youtube.com/watch?v=7rRr-QrRWck
 ![Flow Chart](https://github.com/mayank-cse/EcommerceMerchandizerBot/blob/main/Assets/images/Flow%20Chart.png)
 
 ## [Presentation](https://docs.google.com/presentation/d/15G2gJ_l0Yf6BbbnAvDusuyo-6oca0zkx/edit?usp=sharing&ouid=110656000818841743215&rtpof=true&sd=true)
+[GoToMarket Presentation.pptx](https://github.com/mayank-cse/EcommerceMerchandizerBot/files/9400239/GoToMarket.Presentation.pptx)
 
 ## Further reading
 
