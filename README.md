@@ -39,7 +39,7 @@
     <li><a href="#to-try-this-sample">Try This Sample</a></li>
     <li><a href="#testing-the-bot-using-bot-framework-emulator">Emulator Testing</a></li>
     <li><a href="#deploy-the-bot-to-azure">Deploying</a></li>
-    <li><a href="#implementation">Implementation</a></li>
+    <li><a href="#implementation-video">Implementation</a></li>
     <li><a href="#flow-chart">Flow Chart</a></li>
     <li><a href="#presentation">Presentation</a></li>
     <li><a href="#contact">Contact</a></li>
@@ -64,7 +64,8 @@ Key Features of the Product :
 * Assist managing team with easy to keep track functionality.
 * Works as stress buster with clear and timely reporting.
 * Automating Business Operations for visible efficiency gains due to fast communication.
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+<p align="right">(<a href="#ecommercemerchandizerbot">back to top</a>)</p>
 
 ## Built With
 Bot Framework v4 core bot sample.
@@ -75,7 +76,7 @@ This bot has been created using [Bot Framework](https://dev.botframework.com), i
 - Implement a multi-turn conversation using Dialogs
 - Handle user interruptions for such things as `Help` or `Cancel`
 - Prompt for and validate requests for information from the user
-- 
+
 <p align="right">(<a href="#ecommercemerchandizerbot">back to top</a>)</p>
 
 ## Prerequisites
@@ -148,7 +149,7 @@ Once you created the LUIS model, update `appsettings.json` with your `LuisAppId`
 - Launch Bot Framework Emulator
 - File -> Open Bot
 - Enter a Bot URL of `http://localhost:3978/api/messages
-- 
+
 <p align="right">(<a href="#ecommercemerchandizerbot">back to top</a>)</p>
 
 ## Deploy the bot to Azure
@@ -156,20 +157,21 @@ Once you created the LUIS model, update `appsettings.json` with your `LuisAppId`
 To learn more about deploying a bot to Azure, see [Deploy your bot to Azure](https://aka.ms/azuredeployment) for a complete list of deployment instructions.
 <p align="right">(<a href="#ecommercemerchandizerbot">back to top</a>)</p>
 
-## Implementation
-
-https://www.youtube.com/watch?v=7rRr-QrRWck
-
-## Flow Chart
-![Flow Chart](https://github.com/mayank-cse/EcommerceMerchandizerBot/blob/main/Assets/images/Flow%20Chart.png)
-
-
 ## Presentation
 <!-- [Presentation](https://docs.google.com/presentation/d/15G2gJ_l0Yf6BbbnAvDusuyo-6oca0zkx/edit?usp=sharing&ouid=110656000818841743215&rtpof=true&sd=true) -->
 [GoToMarket Presentation.pptx](https://github.com/mayank-cse/EcommerceMerchandizerBot/files/9400239/GoToMarket.Presentation.pptx)
 <p align="right">(<a href="#ecommercemerchandizerbot">back to top</a>)</p>
 
-###
+
+## Flow Chart
+![Flow Chart](https://github.com/mayank-cse/EcommerceMerchandizerBot/blob/main/Assets/images/Flow%20Chart.png)
+
+
+
+## Implementation Video
+
+https://www.youtube.com/watch?v=7rRr-QrRWck
+
 https://user-images.githubusercontent.com/72187020/188004026-d95557a7-f866-4400-856f-368c4b781093.mp4
 
 <!-- CONTACT -->
